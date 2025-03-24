@@ -1,12 +1,18 @@
-summarizer = pipeline("summarizer", model = "t5-small")
-transcriber = whisper.load_model("base")
+from imports import *
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+import warnings
+warnings.filterwarnings("ignore", message = "FP16 is not supported on CPU; using FP32 instead")
+transcriber = whisper.load_model("base", device = "cpu");
 
 def recordAudio(filename, sampler = 16000):
     beep()
 
     wf = wave.open(filename, "wb")
     wf.setnchannels(1)
-    wf.setsampwidth(2)
+    wf.setsampwidth(4)
     wf.setframerate(sampler)
 
     # deque so buffer is easier to manipulate
@@ -16,7 +22,7 @@ def recordAudio(filename, sampler = 16000):
     frame_count = 0 # number of frames TOTAl since start of processing
     
     try:
-        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int16) as stream:
+        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32) as stream:
             while True:
                 frame, _ = stream.read(1024)
                 wf.writeframes(frame.tobytes())
@@ -39,14 +45,14 @@ def recordAudio(filename, sampler = 16000):
                     temp_filename = "temp_audio_memo.wav"
                     with wave.open(temp_filename, "wb") as tempwf:
                         tempwf.setnchannels(1)
-                        tempwf.setsampwidth(2)
+                        tempwf.setsampwidth(4)
                         tempwf.setframerate(sampler)
                         recentAudio = np.concatenate(recentFrames, axis = 0)
                         tempwf.writeframes(recentAudio.tobytes())
 
-                    abridge = transcriber.transcribe(temp_filename)
-                    transcribed_text = abridge["text"].lower()
-                    
+                    abridge = transcribe(temp_filename)
+                    transcribed_text = abridge["text"].lower();
+                    print(transcribed_text);
                     # use fuzzy so we can see if words similar to "end memo" were said
                     fuzzyThreshold = 80
                     if (fuzz.partial_ratio("end memo", transcribed_text) >= fuzzyThreshold):
@@ -60,12 +66,13 @@ def recordAudio(filename, sampler = 16000):
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
 
-        summary = summarize(filename)
-        transcript = transcribe(filename)
-        date = datetime.now().strftime("%Y-%m-%d")
-        # reminder to finish transcribing
-        saveToDatabase(filename, summary, transcript, date)
+def transcribe(filename):
+    result = transcriber.transcribe(filename)
+    return result
 
 # note to self, go get that beep.wav file
 def beep():
-    audio.WaveObject.from_wave_file("beep.wav").play()
+    try:
+        audio.WaveObject.from_wave_file("beep.wav").play()
+    except Exception as e:
+        print("Beep sound not available. Recording anyway.")
