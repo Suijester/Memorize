@@ -22,9 +22,11 @@ def recordAudio(filename, sampler = 16000):
     frame_count = 0 # number of frames TOTAl since start of processing
     
     try:
-        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32) as stream:
+        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 2048) as stream:
             while True:
                 frame, _ = stream.read(1024)
+                if np.all(frame == 0):
+                    print("Warning: Empty frame detected!")
                 wf.writeframes(frame.tobytes())
                 
                 # add a frame to buffer, increment framesInBuffer by the size of the frame
@@ -67,7 +69,7 @@ def recordAudio(filename, sampler = 16000):
             os.remove(temp_filename)
 
 def transcribe(filename):
-    result = transcriber.transcribe(filename)
+    result = transcriber.transcribe(filename, language = "en", temperature = 0)
     return result
 
 # note to self, go get that beep.wav file

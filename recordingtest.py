@@ -17,11 +17,6 @@ def test_recording():
     print("\nTranscription:")
     print(transcript["text"])
     
-    # Delete the audio file
-    if os.path.exists(filename):
-        os.remove(filename)
-        print(f"\nDeleted audio file: {filename}")
-    
     return transcript
 
 if __name__ == "__main__":
