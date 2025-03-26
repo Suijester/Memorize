@@ -10,7 +10,7 @@ def wakeWord(sampler = 16000):
     print("am listening")
 
     try:
-        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 2048) as stream:
+        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 4096) as stream:
             while True:
                 frame, _ = stream.read(1024)
                 

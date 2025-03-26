@@ -16,7 +16,7 @@ def recordAudio(filename, sampler = 16000):
     frameCount = 0 # number of frames TOTAl since start of processing
     
     try:
-        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 2048) as stream:
+        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 4096) as stream:
             while True:
                 frame, _ = stream.read(1024)
                 wf.writeframes(frame.tobytes())
