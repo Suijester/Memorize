@@ -1,11 +1,5 @@
 from imports import *
-
-import ssl
-ssl._create_default_https_context = ssl._create_unverified_context
-
-import warnings
-warnings.filterwarnings("ignore", message = "FP16 is not supported on CPU; using FP32 instead")
-transcriber = whisper.load_model("base", device = "cpu");
+import transcription
 
 def recordAudio(filename, sampler = 16000):
     beep()
@@ -19,14 +13,12 @@ def recordAudio(filename, sampler = 16000):
     audioBuffer = deque(maxlen = int((sampler * 5) / 1024) + 1)
     framesInBuffer = 0 # number of frames currently in the buffer
     framesPerCheck = 20; # number of frames that needs to occur for us to check if end memo is said
-    frame_count = 0 # number of frames TOTAl since start of processing
+    frameCount = 0 # number of frames TOTAl since start of processing
     
     try:
         with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 2048) as stream:
             while True:
                 frame, _ = stream.read(1024)
-                if np.all(frame == 0):
-                    print("Warning: Empty frame detected!")
                 wf.writeframes(frame.tobytes())
                 
                 # add a frame to buffer, increment framesInBuffer by the size of the frame
@@ -37,8 +29,8 @@ def recordAudio(filename, sampler = 16000):
                 if len(audioBuffer) == audioBuffer.maxlen:
                     framesInBuffer -= audioBuffer[0].shape[0]
                 
-                frame_count += 1
-                if frame_count % framesPerCheck == 0:
+                frameCount += 1
+                if frameCount % framesPerCheck == 0:
                     # check for the end words, 'end memo'
                     framesChecked = min(30, len(audioBuffer))
                     recentFrames = list(audioBuffer)[-framesChecked:]
@@ -52,12 +44,12 @@ def recordAudio(filename, sampler = 16000):
                         recentAudio = np.concatenate(recentFrames, axis = 0)
                         tempwf.writeframes(recentAudio.tobytes())
 
-                    abridge = transcribe(temp_filename)
-                    transcribed_text = abridge["text"].lower();
-                    print(transcribed_text);
+                    abridge = transcription.transcribe(temp_filename)
+                    transcribedText = abridge["text"].lower();
+                    print(transcribedText);
                     # use fuzzy so we can see if words similar to "end memo" were said
                     fuzzyThreshold = 80
-                    if (fuzz.partial_ratio("end memo", transcribed_text) >= fuzzyThreshold):
+                    if (fuzz.partial_ratio("end memo", transcribedText) >= fuzzyThreshold):
                         beep()
                         break
 
@@ -67,10 +59,6 @@ def recordAudio(filename, sampler = 16000):
         temp_filename = "temp_audio_memo.wav"
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
-
-def transcribe(filename):
-    result = transcriber.transcribe(filename, language = "en", temperature = 0)
-    return result
 
 # note to self, go get that beep.wav file
 def beep():

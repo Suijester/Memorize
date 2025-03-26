@@ -1,6 +1,10 @@
 from imports import *
-from audio import recordAudio, transcribe
+from recordAudio import recordAudio
+import transcription
 import os
+
+import warnings
+warnings.filterwarnings("ignore", message = "FP16 is not supported on CPU; using FP32 instead")
 
 def test_recording():
     filename = "test_memo.wav"
@@ -11,7 +15,7 @@ def test_recording():
     recordAudio(filename)
     
     # Get the transcription
-    transcript = transcribe(filename)
+    transcript = transcription.transcribe(filename)
     
     # Print the transcription
     print("\nTranscription:")
