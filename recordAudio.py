@@ -60,9 +60,22 @@ def recordAudio(filename, sampler = 16000):
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
 
-# note to self, go get that beep.wav file
+# Generate and play a beep sound programmatically
 def beep():
     try:
-        audio.WaveObject.from_wave_file("beep.wav").play()
+        # Generate a simple beep using numpy
+        sample_rate = 44100  # standard audio sample rate
+        duration = 0.3  # seconds
+        frequency = 1000  # Hz
+        t = np.linspace(0, duration, int(sample_rate * duration), False)
+        beep_data = 0.5 * np.sin(2 * np.pi * frequency * t)
+        
+        # Convert to int16 for sounddevice
+        beep_data = (beep_data * 32767).astype(np.int16)
+        
+        # Play the beep
+        sounddevice.play(beep_data, sample_rate)
+        sounddevice.wait()  # Wait until the sound finishes playing
+        
     except Exception as e:
-        print("Beep sound not available. Recording anyway.")
+        print(f"Beep sound failed. Recording anyway.")
