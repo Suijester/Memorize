@@ -48,5 +48,3 @@ def wakeWord(sampler = 16000):
         stream.stop()
         if os.path.exists("listening.wav"):
             os.remove("listening.wav")
-
-wakeWord();
