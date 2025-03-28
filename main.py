@@ -12,14 +12,9 @@ def testRecording():
     wakeWord()
     
     print("Starting recording... Say 'end memo' to stop.")
-    
-    # Record audio
     recordAudio(filename)
-    
-    # Get the transcription
     transcript = transcription.transcribe(filename)
     
-    # Print the transcription
     print("\nTranscription:")
     print(transcript["text"])
     
