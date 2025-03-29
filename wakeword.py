@@ -37,7 +37,6 @@ def wakeWord(sampler = 16000):
 
                     abridge = transcription.wakeTranscribe()
                     transcribedText = abridge["text"].lower();
-                    print(transcribedText);
 
                     fuzzyThreshold = 80
                     if (fuzz.partial_ratio("start memo", transcribedText) >= fuzzyThreshold or fuzz.partial_ratio("start recording", transcribedText) >= fuzzyThreshold):
