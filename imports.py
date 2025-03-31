@@ -2,7 +2,6 @@ import whisper
 import sounddevice
 import numpy as np
 import wave
-import sqlite3
 import pyttsx3
 import re
 from transformers import pipeline
@@ -11,3 +10,6 @@ import os
 from datetime import datetime
 from collections import deque
 from fuzzywuzzy import fuzz
+import psycopg2
+import sentence_transformers
+from sentence_transformers import SentenceTransformer
