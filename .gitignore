@@ -29,7 +29,9 @@ memos.db
 *.flac
 temp_audio_memo.wav
 
+# Ignore all txt files except requirements.txt
 *.txt
+!requirements.txt
 
 venv/
 ENV/
