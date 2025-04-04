@@ -1,5 +1,6 @@
 from imports import *
 import transcription
+import database
 
 def recordAudio(filename = datetime.now().strftime("%m/%d/%Y-%H/%M/%S") + ".wav", sampler = 16000):
     beep()
@@ -57,6 +58,7 @@ def recordAudio(filename = datetime.now().strftime("%m/%d/%Y-%H/%M/%S") + ".wav"
         stream.stop()
         wf.close()
         temp_filename = "temp_audio_memo.wav"
+        database.saveMemo(filename, abridge)
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
 
