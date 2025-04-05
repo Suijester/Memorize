@@ -1,5 +1,5 @@
 from imports import *
-from recordAudio import recordAudio
+import audioCommands
 from wakeWord import wakeWord
 import transcription
 import os

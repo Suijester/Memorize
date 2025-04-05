@@ -1,4 +1,5 @@
 from imports import *
+import audioCommands
 import transcription
 
 def wakeWord(sampler = 16000):
@@ -40,9 +41,33 @@ def wakeWord(sampler = 16000):
                     fuzzyThreshold = 80
                     if (fuzz.partial_ratio("start memo", transcribedText) >= fuzzyThreshold or fuzz.partial_ratio("start recording", transcribedText) >= fuzzyThreshold):
                         print("Wake word detected!")
+                        return "record"
+                        break
+
+                    if (fuzz.partial_ratio("delete memo", transcribedText) >= fuzzyThreshold or fuzz.partial_ratio("delete recording", transcribedText) >= fuzzyThreshold):
+                        print("Delete word detected!")
+                        return "delete"
+                        break
+
+                    if (fuzz.partial_ratio("query", transcribedText) >= fuzzyThreshold or fuzz.partial_ratio("question", transcribedText) >= fuzzyThreshold):
+                        print("Query detected!")
+                        return "query"
                         break
 
     finally:
         stream.stop()
         if os.path.exists("listening.wav"):
             os.remove("listening.wav")
+
+
+def wakeHandler():
+    try:
+        command = wakeWord()
+        if command == "record":
+            recordAudio()
+        elif command == "delete":
+            deleteAudio()
+        elif command == "query":
+            queryAudio()
+    except Exception as e:
+        print(f"Error with Wake Word: {e}")
