@@ -13,7 +13,7 @@ def testRecording():
     wakeWord()
     
     print("Starting recording... Say 'end memo' to stop.")
-    recordAudio()
+    audioCommands.recordAudio()
 
     print("\nAll memos in database:")
     database.printAllMemos()
