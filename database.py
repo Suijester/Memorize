@@ -159,3 +159,36 @@ def printAllMemos():
                 
         else:
             print("No memos found.")
+
+def deleteMemobyQuery(query):
+    queryEmbedded = model.encode(query)
+    queryEmbeddedList = queryEmbedded.tolist()
+    
+    conn = getDatabase()
+    if conn is not None:
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT * FROM memos
+            ORDER BY embedding <=> %s::vector
+            LIMIT 1
+        ''', (queryEmbeddedList,))
+
+        result = cursor.fetchone()
+        if result:
+            print(f"Deleting memo: {result[1]}")
+            
+            if os.path.exists(result[1]):
+                os.remove(result[1])
+            
+            cursor.execute('''
+                DELETE FROM memos
+                WHERE id = %s
+            ''', (result[0],))
+            conn.commit()
+            
+            print("Memo deleted successfully.")
+        else:
+            print("No similar memo found to delete.")
+            
+        conn.close()

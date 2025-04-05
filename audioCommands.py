@@ -63,7 +63,7 @@ def recordAudio(filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S") + ".wav"
 
                     # use fuzzy so we can see if words similar to "end memo" were said
                     fuzzyThreshold = 80
-                    if (fuzz.partial_ratio("end memo", transcribedText) >= fuzzyThreshold):
+                    if (fuzz.partial_ratio("end memo", transcribedText) >= fuzzyThreshold or fuzz.partial_ratio("end recording", transcribedText) >= fuzzyThreshold):
                         beep()
                         break
 
