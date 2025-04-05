@@ -1,7 +1,7 @@
 from imports import * 
 import getpass
 
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 
 def getDatabase():
     try:
@@ -29,7 +29,7 @@ if conn is not None:
             transcript TEXT,
             date TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            embedding vector(384)
+            embedding vector(768)
         )
     ''')
 

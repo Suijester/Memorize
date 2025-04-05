@@ -148,6 +148,8 @@ def queryAudio(sampler = 16000):
         database.queryMemos(query)
         if os.path.exists(tempFilename):
             os.remove(tempFilename)
+        if os.path.exists(filename):
+            os.remove(filename)
 
 
 def deleteAudio(sampler = 16000):
@@ -217,6 +219,8 @@ def deleteAudio(sampler = 16000):
         database.deleteMemobyQuery(deletionQuery)
         if os.path.exists(tempFilename):
             os.remove(tempFilename)
+        if os.path.exists(filename):
+            os.remove(filename)
 
 
     
