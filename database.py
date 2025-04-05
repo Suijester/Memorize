@@ -84,10 +84,18 @@ def queryMemos(query):
         cursor = conn.cursor()
 
         cursor.execute('''
-            SELECT id, filename, transcript, date, created_at,
-            embedding <=> %s::vector AS distance,
-            EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - date)) AS timeDistance
-            FROM memos
+            WITH memo_distances AS (
+                SELECT 
+                    id, 
+                    filename, 
+                    transcript, 
+                    date, 
+                    created_at,
+                    embedding <=> %s::vector AS distance,
+                    EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - created_at)) AS timeDistance
+                FROM memos
+            )
+            SELECT * FROM memo_distances
             ORDER BY ((0.7 * distance) + (0.3 * timeDistance)) ASC
             LIMIT 1
         ''', (queryEmbeddedList,))
@@ -96,12 +104,9 @@ def queryMemos(query):
         conn.close()
 
         if result:
-            print(f"Most Relevant Memo (ID: {result[0]}):")
-            print(f"File Name: {result[1]}")
             print(f"Date: {result[3]}")
-            print(f"Created At: {result[4]}")
             print(f"Similarity Distance: {result[5]:.4f} (lower is better)")
-            print(f"Transcript:\n{result[2]}")
+            print(f"Transcript: {result[2]}\n")
         else:
             print("No memo that's similar by vector search.")
 

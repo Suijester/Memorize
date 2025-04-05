@@ -64,10 +64,10 @@ def wakeHandler():
     try:
         command = wakeWord()
         if command == "record":
-            recordAudio()
+            audioCommands.recordAudio()
         elif command == "delete":
-            deleteAudio()
+            audioCommands.deleteAudio()
         elif command == "query":
-            queryAudio()
+            audioCommands.queryAudio()
     except Exception as e:
         print(f"Error with Wake Word: {e}")

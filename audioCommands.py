@@ -82,7 +82,9 @@ def recordAudio(filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S") + ".wav"
 def queryAudio(sampler = 16000):
     beep()
 
+    tempFilename = "tempQuery.wav"
     filename = "query.wav"
+    
     wf = wave.open(filename, "wb")
     wf.setnchannels(1)
     wf.setsampwidth(4)
@@ -92,6 +94,9 @@ def queryAudio(sampler = 16000):
     framesInBuffer = 0
     framesPerCheck = 20
     frameCount = 0
+    
+    silentFrames = 0
+    silenceThreshold = 5
     
     try:
         with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 4096) as stream:
@@ -110,7 +115,6 @@ def queryAudio(sampler = 16000):
                     framesChecked = min(30, len(audioBuffer))
                     recentFrames = list(audioBuffer)[-framesChecked:]
                     
-                    tempFilename = "tempQuery.wav"
                     with wave.open(tempFilename, "wb") as tempwf:
                         tempwf.setnchannels(1)
                         tempwf.setsampwidth(4)
@@ -139,9 +143,82 @@ def queryAudio(sampler = 16000):
         wf.close()
         abridge = transcription.transcribe(filename)
         query = abridge["text"]
+        print("Query:" + query)
+        print()
         database.queryMemos(query)
         if os.path.exists(tempFilename):
             os.remove(tempFilename)
+
+
+def deleteAudio(sampler = 16000):
+    beep()
+
+    tempFilename = "tempDelete.wav"
+    filename = "delete.wav"
+    
+    wf = wave.open(filename, "wb")
+    wf.setnchannels(1)
+    wf.setsampwidth(4)
+    wf.setframerate(sampler)
+
+    audioBuffer = deque(maxlen = int((sampler * 5) / 1024) + 1)
+    framesInBuffer = 0
+    framesPerCheck = 20
+    frameCount = 0
+
+    silentFrames = 0
+    silenceThreshold = 5
+    
+    try:
+        with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 4096) as stream:
+            while True:
+                frame, _ = stream.read(1024)
+                wf.writeframes(frame.tobytes())
+                
+                audioBuffer.append(frame)
+                framesInBuffer += frame.shape[0]
+                
+                if len(audioBuffer) == audioBuffer.maxlen:
+                    framesInBuffer -= audioBuffer[0].shape[0]
+                
+                frameCount += 1
+                if frameCount % framesPerCheck == 0:
+                    framesChecked = min(30, len(audioBuffer))
+                    recentFrames = list(audioBuffer)[-framesChecked:]
+                    
+                    with wave.open(tempFilename, "wb") as tempwf:
+                        tempwf.setnchannels(1)
+                        tempwf.setsampwidth(4)
+                        tempwf.setframerate(sampler)
+                        recentAudio = np.concatenate(recentFrames, axis = 0)
+                        tempwf.writeframes(recentAudio.tobytes())
+
+                    abridge = transcription.transcribe(tempFilename)
+                    deleteQuery = abridge["text"].lower()
+
+                    if not deleteQuery.strip():
+                        silentFrames += 1
+                        if silentFrames > silenceThreshold:
+                            beep()
+                            break
+                    else:
+                        silentFrames = 0
+
+                    fuzzyThreshold = 80
+                    if (fuzz.partial_ratio("end deletion", deleteQuery) >= fuzzyThreshold):
+                        beep()
+                        break
+
+    finally:
+        stream.stop()
+        wf.close()
+        abridge = transcription.transcribe(filename)
+        deletionQuery = abridge["text"]
+        database.deleteMemobyQuery(deletionQuery)
+        if os.path.exists(tempFilename):
+            os.remove(tempFilename)
+
+
     
 def beep():
     try:

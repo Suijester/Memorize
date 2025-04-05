@@ -1,6 +1,6 @@
 from imports import *
 import audioCommands
-from wakeWord import wakeWord
+import wakeWord
 import transcription
 import os
 import database
@@ -10,17 +10,7 @@ warnings.filterwarnings("ignore", message = "FP16 is not supported on CPU; using
 
 def testRecording():
     print("Listening...")
-    wakeWord()
-    
-    print("Starting recording... Say 'end memo' to stop.")
-    audioCommands.recordAudio()
-
-    print("\nAll memos in database:")
-    database.printAllMemos()
-    
-    print("\nDeleting all memos:")
-    database.deleteAllMemos()
-
+    wakeWord.wakeHandler()
     print("Done.")
 
 if __name__ == "__main__":
