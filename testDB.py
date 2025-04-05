@@ -67,5 +67,6 @@ if __name__ == "__main__":
         print("\n=== Testing Delete Functionality ===")
         testDeleteMemos()
 
+        deleteAllMemos()
     
     print("\n=== Test Complete ===")

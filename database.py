@@ -123,10 +123,18 @@ def deleteAllMemos():
     if conn is not None:
         cursor = conn.cursor()
 
+        cursor.execute('''SELECT * FROM memos''')
+        results = cursor.fetchall()
+
+        if results:
+            for result in results:
+                if os.path.exists(result[1]):
+                    os.remove(result[1])
+
         cursor.execute('''
             DELETE FROM memos
         ''')
-        
+
         conn.commit()
         conn.close()
 
@@ -141,6 +149,8 @@ def printAllMemos():
 
         if results:
             for result in results:
-                print(f"{result[1]}\n")
+                print(f"File Name: {result[1]}")
+                print(f"Transcript: {result[2]}\n")
+                
         else:
             print("No memos found.")

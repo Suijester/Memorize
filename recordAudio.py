@@ -2,7 +2,7 @@ from imports import *
 import transcription
 import database
 
-def recordAudio(filename = datetime.now().strftime("%m/%d/%Y-%H/%M/%S") + ".wav", sampler = 16000):
+def recordAudio(filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S") + ".wav", sampler = 16000):
     beep()
 
     wf = wave.open(filename, "wb")
@@ -46,7 +46,7 @@ def recordAudio(filename = datetime.now().strftime("%m/%d/%Y-%H/%M/%S") + ".wav"
                         tempwf.writeframes(recentAudio.tobytes())
 
                     abridge = transcription.transcribe(temp_filename)
-                    transcribedText = abridge["text"].lower();
+                    transcribedText = abridge["text"].lower()
                     print(transcribedText);
                     # use fuzzy so we can see if words similar to "end memo" were said
                     fuzzyThreshold = 80
@@ -57,8 +57,11 @@ def recordAudio(filename = datetime.now().strftime("%m/%d/%Y-%H/%M/%S") + ".wav"
     finally:
         stream.stop()
         wf.close()
-        temp_filename = "temp_audio_memo.wav"
-        database.saveMemo(filename, abridge)
+        abridge = transcription.transcribe(filename)
+        transcribedText = abridge["text"]
+        print("Transcribed text: " + transcribedText)
+        print()
+        database.saveMemo(filename, transcribedText)
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
 

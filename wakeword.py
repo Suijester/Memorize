@@ -7,7 +7,6 @@ def wakeWord(sampler = 16000):
     framesInBuffer = 0 # number of frames currently in the buffer
     framesPerCheck = 20; # number of frames that needs to occur for us to check if end memo is said
     frameCount = 0 # number of frames TOTAl since start of processing
-    print("am listening")
 
     try:
         with sounddevice.InputStream(samplerate = sampler, channels = 1, dtype = np.int32, blocksize = 4096) as stream:
