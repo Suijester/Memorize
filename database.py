@@ -176,7 +176,7 @@ def deleteMemobyQuery(query):
 
         result = cursor.fetchone()
         if result:
-            print(f"Deleting memo: {result[1]}")
+            print(f"Deleting memo:{result[2]}")
             
             if os.path.exists(result[1]):
                 os.remove(result[1])

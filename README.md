@@ -56,9 +56,9 @@ python main.py
 
 3. If recording a new memo, the app will transcribe the audio and save it to the database either when the user goes quiet or says 'end memo'
 
-4. If deleting a memo, the app will delete the most relevant memo based on keywords (so the memo most similar to your query for deletion, e.g. 'delete the memo where I talked about keys', and it'll look for the memo most similar) from the database and remove the audio file either when the user goes quiet or says 'end deletion'
+4. If deleting a memo, say 'delete memo' and then ask your question, the app will delete the most relevant memo based on keywords (so the memo most similar to your query for deletion, e.g. 'delete the memo where I talked about keys', and it'll look for the memo most similar) from the database and remove the audio file either when the user goes quiet or says 'end deletion'
 
-5. If querying, the app will return the most relevant memo based on the query, utilizing vector search (effectiveness may vary, due to embedding quality of 768 dimensions)
+5. If querying, say 'query' and then ask your question, the app will return the most relevant memo based on the query, utilizing vector search (effectiveness may vary, due to embedding quality of 768 dimensions)
 
 ## Requirements
 
