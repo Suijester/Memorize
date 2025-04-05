@@ -6,7 +6,6 @@ Memorize is a wake-word activated memo app, designed to prevent you from forgett
 * Converts spoken memos and audio notes into text utilizing Whisper
 * Stores transcribed text locally in a PostgreSQL database
 * Enables vector search in response to verbal queries
-* Text-to-speech responses for easy reading
 
 ## Installation
 
